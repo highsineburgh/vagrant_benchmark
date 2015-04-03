@@ -31,8 +31,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define "vbox_standard" do |vbs|
     vbs.vm.box = "chef/ubuntu-14.04"
     vbs.vm.network "private_network", type: "dhcp"
-    vbs.vm.synced_folder "states", "/srv/salt",
-    vbs.vm.synced_foder "pillars", "/srv/pillar",
+    vbs.vm.synced_folder "states", "/srv/salt"
+    vbs.vm.synced_foder "pillars", "/srv/pillar"
     vbs.vm.provision :salt do |salt|
       salt.minion_config = "minion"
       salt.log_level = 'error'
@@ -55,11 +55,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.define "vmware" do |vmw|
-    vwm.vm.box = "chef/ubuntu-14.04"
-    vwm.vm.network "private_network", type: "dhcp"
-    vwm.vm.synced_folder "states", "/srv/salt"
-    vwm.vm.synced_foder "pillars", "/srv/pillar"
-    vwm.vm.provision :salt do |salt|
+    vmw.vm.box = "chef/ubuntu-14.04"
+    vmw.vm.network "private_network", type: "dhcp"
+    vmw.vm.synced_folder "states", "/srv/salt"
+    vmw.vm.synced_foder "pillars", "/srv/pillar"
+    vmw.vm.provision :salt do |salt|
       salt.minion_config = "minion"
       salt.log_level = 'error'
       salt.colorize = false
