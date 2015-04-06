@@ -65,7 +65,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.define "vmware" do |vmw|
     vmw.vm.box = "tfield/trusty64"
-    vmw.vm.network "private_network", type: "dhcp"
+    vmw.vm.network "public_network"
     vmw.vm.synced_folder "states", "/srv/salt"
     vmw.vm.synced_folder "pillars", "/srv/pillar"
     vmw.vm.provision :salt do |salt|
