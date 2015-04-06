@@ -6,8 +6,8 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  MEM = 2048
-  CPUS = 1
+  mem = nil
+  cpus = nil
 
   config.vm.provider "virtualbox" do |v|
 
@@ -15,27 +15,27 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     host = RbConfig::CONFIG['host_os']
     # Give VM 1/4 system memory & access to all cpu cores on the host
     if host =~ /darwin/
-      CPUS = `sysctl -n hw.ncpu`.to_i
+      cpus = `sysctl -n hw.ncpu`.to_i
       # sysctl returns Bytes and we need to convert to MB
-      MEM = `sysctl -n hw.memsize`.to_i / 1024 / 1024 / 4
+      mem = `sysctl -n hw.memsize`.to_i / 1024 / 1024 / 4
     elsif host =~ /linux/
-      CPUS = `nproc`.to_i
+      cpus = `nproc`.to_i
       # meminfo shows KB and we need to convert to MB
-      MEM = `grep 'MemTotal' /proc/meminfo | sed -e 's/MemTotal://' -e 's/ kB//'`.to_i / 1024 / 4
+      mem = `grep 'MemTotal' /proc/meminfo | sed -e 's/MemTotal://' -e 's/ kB//'`.to_i / 1024 / 4
     else # sorry Windows folks, I can't help you
-      CPUS = 2
-      MEM = 1024
+      cpus = 2
+      mem = 1024
     end
 
-    v.customize ["modifyvm", :id, "--memory", MEM]
-    v.customize ["modifyvm", :id, "--cpus", CPUS]
+    v.customize ["modifyvm", :id, "--memory", mem]
+    v.customize ["modifyvm", :id, "--cpus", cpus]
   end
 
   config.vm.provider "vmware_workstation" do |vm|
-    vm.vmx["memsize"] = MEM.to_s
-    vm.vmx["numvcpus"] = CPUS.to_s
+    vm.vmx["memsize"] = mem.to_s
+    vm.vmx["numvcpus"] = cpus.to_s
   end
-end
+
 
   config.vm.define "vbox_standard" do |vbs|
     vbs.vm.box = "chef/ubuntu-14.04"
@@ -64,7 +64,7 @@ end
   end
 
   config.vm.define "vmware" do |vmw|
-    vmw.vm.box = "chef/ubuntu-14.04"
+    vmw.vm.box = "tfield/trusty64"
     vmw.vm.network "private_network", type: "dhcp"
     vmw.vm.synced_folder "states", "/srv/salt"
     vmw.vm.synced_folder "pillars", "/srv/pillar"
