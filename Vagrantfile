@@ -75,4 +75,25 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       salt.run_highstate = true
     end
   end
+
+  config.vm.define "vbox_cpu" do |vbc|
+    vbc.vm.box = "chef/ubuntu-14.04"
+    vbc.vm.provider "virtualbox" do |vb|
+      vb.customize ["modifyvm", :id, "--memory", mem]
+      vb.customize ["modifyvm", :id, "--cpus", cpus]
+      vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
+      vb.customize ["modifyvm", :id, "--nictype2", "virtio"]
+      vb.customize ["modifyvm", :id, "--pae", "on"]
+      vb.customize ["modifyvm", :id, "--chipset", "ich9"]
+    end
+    vbc.vm.network "private_network", type: "dhcp"
+    vbc.vm.synced_folder "states", "/srv/salt"
+    vbc.vm.synced_folder "pillars", "/srv/pillar"
+    vbc.vm.provision :salt do |salt|
+      salt.minion_config = "minion"
+      salt.log_level = 'error'
+      salt.colorize = false
+      salt.run_highstate = true
+    end
+  end
 end
